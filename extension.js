@@ -40,7 +40,7 @@ function process() {
 
 	var selectedText = editor.document.getText(editor.selection);
 
-	if ( selectedText.length == 0 ) {
+	if (selectedText.length == 0) {
 		selectedText = editor.document.getText();
 	}
 
@@ -59,20 +59,20 @@ function process() {
 		});
 	});
 
-	if ( bem_nesting ) {
-		var finalString = generateBEM( outputClasses, add_comments );
+	if (bem_nesting) {
+		var finalString = generateBEM(outputClasses, add_comments);
 	} else {
 		// Format and combine string for output
 		var finalString = outputClasses.reduce((outputClassText, classToAdd) => {
 			var open_bracket = '';
 			var close_bracket = '';
 
-			if ( brackets ) {
+			if (brackets) {
 				var open_bracket = '{';
 				var close_bracket = '}';
 			}
 
-			if ( !brackets_newline_after ) {
+			if (!brackets_newline_after) {
 				var cleanString = `.${classToAdd} ${open_bracket}${close_bracket}`;
 			} else {
 				var cleanString = `.${classToAdd} ${open_bracket}\n${close_bracket}`;
@@ -81,20 +81,20 @@ function process() {
 		}, '');
 	}
 
-	if ( destination == 'clipboard' ) {
+	if (destination == 'clipboard') {
 		ncp.copy(finalString, () => {
 			vscode.window.showInformationMessage('Copied CSS format to clipboard');
 		});
 	} else {
 		vscode.workspace.openTextDocument()
-		.then((newDoc) => {
-			return vscode.window.showTextDocument(newDoc, 1, false)
-				.then((editor) => {
-					return editor.edit((editBuilder) => {
-						editBuilder.insert(new vscode.Position(0, 0), finalString );
+			.then((newDoc) => {
+				return vscode.window.showTextDocument(newDoc, 1, false)
+					.then((editor) => {
+						return editor.edit((editBuilder) => {
+							editBuilder.insert(new vscode.Position(0, 0), finalString);
+						});
 					});
-				});
-		});
+			});
 	}
 }
 
@@ -149,7 +149,7 @@ function activate(context) {
 	context.subscriptions.push(runwithoutbem);
 }
 
-function generateBEM( data, add_comments ) {
+function generateBEM(data, add_comments) {
 	var indentation = config.get('indentation');
 	var element_separator = config.get('element_separator');
 	var modifier_separator = config.get('modifier_separator');
@@ -161,7 +161,7 @@ function generateBEM( data, add_comments ) {
 	var comment_symbol_beginning = "/* ";
 	var comment_symbol_end = " */";
 
-	if ( comment_style == "scss" ) {
+	if (comment_style == "scss") {
 		var comment_symbol_beginning = "// ";
 		var comment_symbol_end = "";
 	}
@@ -175,89 +175,89 @@ function generateBEM( data, add_comments ) {
 		var block = {};
 		var element = {};
 
-		if ( selector.indexOf( element_separator ) != -1 ) {
+		if (selector.indexOf(element_separator) != -1) {
 
-			var parts = selector.split( element_separator );
+			var parts = selector.split(element_separator);
 
 			// check if block with this name exist already
 			var hasBlock = selectors.findIndex(el => el.name == parts[0]);
 
 			// if block is exist link to list
-			if ( hasBlock > -1 )
-				block = selectors[ hasBlock ];
+			if (hasBlock > -1)
+				block = selectors[hasBlock];
 
 			// if block is not exist give it name
-			if ( hasBlock == -1 )
-				block.name	= parts[0];
+			if (hasBlock == -1)
+				block.name = parts[0];
 
 			// if elements list exist in block
-			if ( !( 'elements' in block ) )
+			if (!('elements' in block))
 				block.elements = [];
 
 			// get element and his modifier
 			var elementParts = parts[1].split(modifier_separator);
 
 			// check if element with this name exist in block already
-			var hasElement = block.elements.findIndex(el => el.name == elementParts[0] );
+			var hasElement = block.elements.findIndex(el => el.name == elementParts[0]);
 
 			// if element is exist link to list
-			if ( hasElement > -1 )
-				element = block.elements[ hasElement ];
+			if (hasElement > -1)
+				element = block.elements[hasElement];
 
 			// if element is not exist give it name
-			if ( hasElement == -1 )
+			if (hasElement == -1)
 				element.name = elementParts[0];
 
 			// if element has modifier
-			if ( elementParts.length > 1 ) {
+			if (elementParts.length > 1) {
 				// if modifiers list exist in element
-				if ( !( 'modifiers' in element ) )
+				if (!('modifiers' in element))
 					element.modifiers = [];
 
 				// add modifier
-				element.modifiers.push( elementParts[1] );
+				element.modifiers.push(elementParts[1]);
 			}
 
 			// if it is new element add it to block
-			if ( hasElement == -1 )
+			if (hasElement == -1)
 				block.elements.push(element);
 
 			// if it is new block add it to list
-			if ( hasBlock == -1 ) {
-				selectors.push( block );
+			if (hasBlock == -1) {
+				selectors.push(block);
 			}
-		} else if ( selector.indexOf( modifier_separator ) != -1 ) {
-			var parts = selector.split( modifier_separator );
+		} else if (selector.indexOf(modifier_separator) != -1) {
+			var parts = selector.split(modifier_separator);
 
 			var hasBlock = selectors.findIndex(el => el.name == parts[0]);
 
-			if ( hasBlock > -1 )
-				block = selectors[ hasBlock ];
+			if (hasBlock > -1)
+				block = selectors[hasBlock];
 
-			if ( hasBlock == -1 )
+			if (hasBlock == -1)
 				block.name = parts[0];
 
-			if ( !( 'modifiers' in block ) )
+			if (!('modifiers' in block))
 				block.modifiers = [];
 
 			// add modifier
-			block.modifiers.push( parts[1] );
+			block.modifiers.push(parts[1]);
 
-			if ( hasBlock == -1 )
-				selectors.push( block );
+			if (hasBlock == -1)
+				selectors.push(block);
 		} else {
 			var hasBlock = selectors.findIndex(el => el.name == selector);
 
-			if ( hasBlock == -1 ) {
+			if (hasBlock == -1) {
 				block.name = selector;
-				selectors.push( block );
+				selectors.push(block);
 			}
 		}
 	}
 
 	// format output
-	selectors.forEach( function ( block ) {
-		if ( brackets ) {
+	selectors.forEach(function (block) {
+		if (brackets) {
 			output += "." + block.name + " {\n";
 		} else {
 			output += "." + block.name + "\n";
@@ -267,29 +267,29 @@ function generateBEM( data, add_comments ) {
 		var indent1 = indent + indent;
 		var indent2 = indent + indent + indent;
 
-		if ( empty_line_before_nested_selector ) {
+		if (empty_line_before_nested_selector) {
 			var empty_line = "\n";
 		} else {
 			var empty_line = "";
 		}
 
-		if ( ( 'modifiers' in block ) ) {
-			block.modifiers.forEach( function ( modifier ) {
-				if ( brackets ) {
-					if ( brackets_newline_after ) {
-						if ( add_comments )
+		if (('modifiers' in block)) {
+			block.modifiers.forEach(function (modifier) {
+				if (brackets) {
+					if (brackets_newline_after) {
+						if (add_comments)
 							output += empty_line + indent1 + comment_symbol_beginning + "." + block.name + modifier_separator + modifier + comment_symbol_end + "\n";
 
 						output += empty_line + indent1 + parent_symbol + modifier_separator + modifier + " {\n";
 						output += indent1 + "}\n";
 					} else {
-						if ( add_comments )
+						if (add_comments)
 							output += empty_line + indent1 + comment_symbol_beginning + "." + block.name + modifier_separator + modifier + comment_symbol_end + "\n";
 
-							output += empty_line + indent1 + parent_symbol + modifier_separator + modifier + " {}\n";
+						output += empty_line + indent1 + parent_symbol + modifier_separator + modifier + " {}\n";
 					}
 				} else {
-					if ( add_comments )
+					if (add_comments)
 						output += indent1 + comment_symbol_beginning + "." + block.name + modifier_separator + modifier + comment_symbol_end + "\n";
 
 					output += indent1 + parent_symbol + modifier_separator + modifier + "\n";
@@ -298,47 +298,47 @@ function generateBEM( data, add_comments ) {
 			});
 		}
 
-		if ( ( 'elements' in block ) ) {
-			block.elements.forEach( function ( element ) {
-				if ( brackets ) {
-					if ( brackets_newline_after ) {
-						if ( add_comments )
+		if (('elements' in block)) {
+			block.elements.forEach(function (element) {
+				if (brackets) {
+					if (brackets_newline_after) {
+						if (add_comments)
 							output += empty_line + indent1 + comment_symbol_beginning + "." + block.name + element_separator + element.name + comment_symbol_end + "\n";
 
 						output += empty_line + indent1 + parent_symbol + element_separator + element.name + " {\n";
 					} else {
-						if ( add_comments )
+						if (add_comments)
 							output += empty_line + indent1 + comment_symbol_beginning + "." + block.name + element_separator + element.name + comment_symbol_end + "\n";
 
 						output += empty_line + indent1 + parent_symbol + element_separator + element.name + " {";
 					}
 				} else {
-					if ( add_comments )
+					if (add_comments)
 						output += empty_line + indent1 + comment_symbol_beginning + "." + block.name + element_separator + element.name + comment_symbol_end + "\n";
 
 					output += empty_line + indent1 + parent_symbol + element_separator + element.name + "\n";
 				}
 
-				if ( ( 'modifiers' in element ) ) {
-					if (!brackets_newline_after )
+				if (('modifiers' in element)) {
+					if (!brackets_newline_after)
 						output += "\n";
 
-					element.modifiers.forEach( function ( modifier ) {
-						if ( brackets ) {
-							if ( brackets_newline_after ) {
-								if ( add_comments )
+					element.modifiers.forEach(function (modifier) {
+						if (brackets) {
+							if (brackets_newline_after) {
+								if (add_comments)
 									output += empty_line + indent2 + comment_symbol_beginning + "." + block.name + element_separator + element.name + modifier_separator + modifier + comment_symbol_end + "\n";
 
 								output += empty_line + indent2 + parent_symbol + modifier_separator + modifier + " {\n";
 								output += indent2 + "}\n";
 							} else {
-								if ( add_comments )
+								if (add_comments)
 									output += empty_line + indent2 + comment_symbol_beginning + "." + block.name + element_separator + element.name + modifier_separator + modifier + comment_symbol_end + "\n";
 
 								output += empty_line + indent2 + parent_symbol + modifier_separator + modifier + " {}\n";
 							}
 						} else {
-							if ( add_comments )
+							if (add_comments)
 								output += empty_line + indent2 + comment_symbol_beginning + "." + block.name + element_separator + element.name + modifier_separator + modifier + comment_symbol_end + "\n";
 
 							output += empty_line + indent2 + parent_symbol + modifier_separator + modifier + "\n";
@@ -347,11 +347,11 @@ function generateBEM( data, add_comments ) {
 					});
 				}
 
-				if ( brackets ) {
-					if ( brackets_newline_after ) {
+				if (brackets) {
+					if (brackets_newline_after) {
 						output += indent1 + "}\n";
 					} else {
-						if ( ( 'modifiers' in element ) ) {
+						if (('modifiers' in element)) {
 							output += indent1 + "}\n";
 						} else {
 							output += "}\n";
@@ -363,14 +363,14 @@ function generateBEM( data, add_comments ) {
 			});
 		}
 
-		if ( brackets ) {
+		if (brackets) {
 			output += "}\n";
 		} else {
 			output += "\n";
 		}
 	});
 
-	if ( !brackets ) {
+	if (!brackets) {
 		output = output.replace("\n\n\n\n", "\n\n");
 		output = output.replace("\n\n\n", "\n\n");
 	}
