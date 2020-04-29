@@ -264,8 +264,8 @@ function generateBEM(data, add_comments) {
 		}
 
 		var indent = indentation;
-		var indent1 = indent + indent;
-		var indent2 = indent + indent + indent;
+		var indent1 = indent;
+		var indent2 = indent + indent;
 
 		if (empty_line_before_nested_selector) {
 			var empty_line = "\n";
@@ -292,7 +292,7 @@ function generateBEM(data, add_comments) {
 					if (add_comments)
 						output += indent1 + comment_symbol_beginning + "." + block.name + modifier_separator + modifier + comment_symbol_end + "\n";
 
-					output += indent1 + parent_symbol + modifier_separator + modifier + "\n";
+					output += indent1 + parent_symbol + modifier_separator + modifier;
 					output += "\n";
 				}
 			});
@@ -316,7 +316,8 @@ function generateBEM(data, add_comments) {
 					if (add_comments)
 						output += empty_line + indent1 + comment_symbol_beginning + "." + block.name + element_separator + element.name + comment_symbol_end + "\n";
 
-					output += empty_line + indent1 + parent_symbol + element_separator + element.name + "\n";
+					output += empty_line + indent1 + parent_symbol + element_separator + element.name;
+					// output += "\n";
 				}
 
 				if (('modifiers' in element)) {
@@ -341,7 +342,7 @@ function generateBEM(data, add_comments) {
 							if (add_comments)
 								output += empty_line + indent2 + comment_symbol_beginning + "." + block.name + element_separator + element.name + modifier_separator + modifier + comment_symbol_end + "\n";
 
-							output += empty_line + indent2 + parent_symbol + modifier_separator + modifier + "\n";
+							output += empty_line + indent2 + parent_symbol + modifier_separator + modifier;
 							output += "\n";
 						}
 					});
@@ -366,13 +367,14 @@ function generateBEM(data, add_comments) {
 		if (brackets) {
 			output += "}\n";
 		} else {
-			output += "\n";
+			// output += "\n";
 		}
 	});
 
 	if (!brackets) {
 		output = output.replace("\n\n\n\n", "\n\n");
 		output = output.replace("\n\n\n", "\n\n");
+		output = output.replace("\n\n", "\n");
 	}
 
 	return output;
